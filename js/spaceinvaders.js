@@ -376,14 +376,21 @@ PlayState.prototype.update = function(game, dt) {
         this.ship.y += this.shipSpeed * dt;
     }
 
-    //  Keep the ship in bounds.
+    //  Keep the ship in canvas.
     if(this.ship.x < game.gameBounds.left) {
-        this.ship.x = game.gameBounds.left;
-    }
-    if(this.ship.x > game.gameBounds.right) {
         this.ship.x = game.gameBounds.right;
     }
-
+    if(this.ship.x > game.gameBounds.right) {
+        this.ship.x = game.gameBounds.left;
+    }
+ 
+    //  Keep the ship in canvas.
+    if(this.ship.y < game.gameBounds.top) {
+        this.ship.y = game.gameBounds.bottom;
+    }
+    if(this.ship.y > game.gameBounds.bottom) {
+        this.ship.y = game.gameBounds.top;
+    }
     //  Move each bomb.
     for(var i=0; i<this.bombs.length; i++) {
         var bomb = this.bombs[i];
