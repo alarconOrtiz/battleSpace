@@ -205,6 +205,22 @@ Game.prototype.keyUp = function(keyCode) {
     }
 };
 
+Game.prototype.keyRigth = function(keyCode) {
+    delete this.pressedKeys[keyCode];
+    //  Delegate to the current state too.
+    if(this.currentState() && this.currentState().keyRigth) {
+        this.currentState().keyRigth(this, keyCode);
+    }
+};
+
+Game.prototype.keyLeft = function(keyCode) {
+    delete this.pressedKeys[keyCode];
+    //  Delegate to the current state too.
+    if(this.currentState() && this.currentState().keyLeft) {
+        this.currentState().keyLeft(this, keyCode);
+    }
+};
+
 function WelcomeState() {
 
 }
@@ -351,6 +367,13 @@ PlayState.prototype.update = function(game, dt) {
     }
     if(game.pressedKeys[32]) {
         this.fireRocket();
+    }
+    //if the top or bottom arrow keys are pressed, move the ship up o down  
+    if(game.pressedKeys[38]) {
+        this.ship.y -= this.shipSpeed * dt;
+    }
+    if(game.pressedKeys[40]) {
+        this.ship.y += this.shipSpeed * dt;
     }
 
     //  Keep the ship in bounds.
