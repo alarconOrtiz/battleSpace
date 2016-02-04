@@ -391,6 +391,7 @@ PlayState.prototype.update = function(game, dt) {
     if(this.ship.y > game.gameBounds.bottom) {
         this.ship.y = game.gameBounds.top;
     }
+    
     //  Move each bomb.
     for(var i=0; i<this.bombs.length; i++) {
         var bomb = this.bombs[i];
