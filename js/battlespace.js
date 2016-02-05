@@ -560,8 +560,18 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#999999';
     ctx.beginPath();
     ctx.moveTo(this.ship.x,this.ship.y);
+
+    //going up
     ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
     ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y + this.ship.height);
+    //going down
+    ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y - this.ship.height);
+    ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
+    
+    //going right
+    ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
+    ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
+
     ctx.fill();
     //ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
 
