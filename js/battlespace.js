@@ -632,11 +632,11 @@ PlayState.prototype.draw = function(game, dt, ctx) {
         if(rocket.direction == rocket.way.up ||
             rocket.direction == rocket.way.down)
         {
-            ctx.fillRect(rocket.x, rocket.y - 2, 1, 4);
+            ctx.fillRect(rocket.x, rocket.y, 1, 4);
         }
         else //direction == rigth || left
-        {
-            ctx.fillRect(rocket.x , this.ship.height);//rocket.y + 10, 4, 1);
+        { 
+            ctx.fillRect(rocket.x , rocket.y , 4, 1);//rocket.y + 10, 4, 1);
         }
         
     }
@@ -685,7 +685,14 @@ PlayState.prototype.fireRocket = function() {
     if(this.lastRocketTime === null || ((new Date()).valueOf() - this.lastRocketTime) > (1000 / this.config.rocketMaxFireRate))
     {   
         //  Add a rocket.
-        this.rockets.push(new Rocket(this.ship.x, this.ship.y - 12, this.config.rocketVelocity,this.ship.direction));
+        if(this.ship.direction == this.ship.shape.up || this.ship.direction == this.ship.shape.down) 
+        {
+            this.rockets.push(new Rocket(this.ship.x, this.ship.y - 12, this.config.rocketVelocity,this.ship.direction));
+        }
+        else
+        {
+             this.rockets.push(new Rocket(this.ship.x, this.ship.y , this.config.rocketVelocity,this.ship.direction));
+        }
         this.lastRocketTime = (new Date()).valueOf();
 
         //  Play the 'shoot' sound.
