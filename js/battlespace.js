@@ -37,7 +37,7 @@ function Game() {
         gameWidth: 400,
         gameHeight: 300,
         fps: 50,
-        debugMode: false,
+        debugMode: true,
         invaderRanks: 5,
         invaderFiles: 10,
         shipSpeed: 120,
@@ -558,7 +558,12 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     
     //  Draw ship.
     ctx.fillStyle = '#999999';
-    ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
+    ctx.beginPath();
+    ctx.moveTo(this.ship.x,this.ship.y);
+    ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
+    ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y + this.ship.height);
+    ctx.fill();
+    //ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
 
     //  Draw invaders.
     ctx.fillStyle = '#006600';
