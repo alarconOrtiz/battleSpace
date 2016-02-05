@@ -361,9 +361,11 @@ PlayState.prototype.update = function(game, dt) {
     //  more like a text editor caret.
     if(game.pressedKeys[37]) {
         this.ship.x -= this.shipSpeed * dt;
+        this.ship.direction = this.ship.shape.left;
     }
     if(game.pressedKeys[39]) {
         this.ship.x += this.shipSpeed * dt;
+        this.ship.direction = this.ship.shape.right;
     }
     if(game.pressedKeys[32]) {
         this.fireRocket();
@@ -371,9 +373,11 @@ PlayState.prototype.update = function(game, dt) {
     //if the top or bottom arrow keys are pressed, move the ship up o down  
     if(game.pressedKeys[38]) {
         this.ship.y -= this.shipSpeed * dt;
+        this.ship.direction = this.ship.shape.up;
     }
     if(game.pressedKeys[40]) {
         this.ship.y += this.shipSpeed * dt;
+        this.ship.direction = this.ship.shape.down;
     }
 
     //  Keep the ship in canvas.
@@ -561,18 +565,31 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.beginPath();
     ctx.moveTo(this.ship.x,this.ship.y);
 
-    //going up
-    ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
-    ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y + this.ship.height);
-    //going down
-    ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y - this.ship.height);
-    ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
+    switch(this.ship.direction)
+    {
+        case this.ship.shape.up:
+            //shape up
+            ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
+            ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y + this.ship.height);
+            break;
+        case this.ship.shape.down:
+            //shape down
+            ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y - this.ship.height);
+            ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
+            break;
+        case this.ship.shape.right:
+            //shape right
+            ctx.lineTo(this.ship.x - this.ship.height,this.ship.y + (this.ship.width/2));
+            ctx.lineTo(this.ship.x - this.ship.height,this.ship.y - (this.ship.width/2));
+            break;
+        default: //this.ship.shape.left 
+             //shape left 
+            ctx.lineTo(this.ship.x + this.ship.height,this.ship.y + (this.ship.width/2));
+            ctx.lineTo(this.ship.x + this.ship.height,this.ship.y - (this.ship.width/2));
     
-    //going right
-    ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
-    ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
-
+    }
     ctx.fill();
+    //example to create a ship as rect.
     //ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
 
     //  Draw invaders.
@@ -728,11 +745,20 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
   The ship has a position and that's about it.
 
 */
-function Ship(x, y) {
-    this.x = x;
-    this.y = y;
-    this.width = 20;
+function Ship(x, y, direction)
+ {
+    this.x      = x;
+    this.y      = y;
+    this.width  = 20;
     this.height = 16;
+    this.direction = direction;
+    this.shape = 
+    {
+        right : 1,
+        left  : 2,
+        up    : 3,
+        dowm  : 4
+    };
 }
 
 /*
