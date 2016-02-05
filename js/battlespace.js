@@ -320,7 +320,7 @@ function PlayState(config, level) {
 PlayState.prototype.enter = function(game) {
 
     //  Create the ship.
-    this.ship = new Ship(game.width / 2, game.gameBounds.bottom);
+    this.ship = new Ship(game.width / 2, game.gameBounds.bottom,3);
 
     //  Setup initial state.
     this.invaderCurrentVelocity =  10;
@@ -410,10 +410,28 @@ PlayState.prototype.update = function(game, dt) {
     //  Move each rocket.
     for(i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        rocket.y -= dt * rocket.velocity;
+
+        switch (rocket.direction)
+        {
+            case rocket.way.up:
+            rocket.y -= dt * rocket.velocity;
+            break;
+            case rocket.way.down:
+            rocket.y += dt * rocket.velocity;
+            break;
+            case rocket.way.right:
+            rocket.x += dt * rocket.velocity;
+            break;
+            case rocket.way.left:
+            rocket.x -= dt * rocket.velocity;
+        }
+        
 
         //  If the rocket has gone off the screen remove it.
-        if(rocket.y < 0) {
+        if(rocket.y < 0 || rocket.y > game.gameBounds.bottom) {
+            this.rockets.splice(i--, 1);
+        }
+        if(rocket.x < 0 || rocket.x > game.gameBounds.right) {
             this.rockets.splice(i--, 1);
         }
     }
@@ -610,7 +628,17 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#ff0000';
     for(var i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        ctx.fillRect(rocket.x, rocket.y - 2, 1, 4);
+
+        if(rocket.direction == rocket.way.up ||
+            rocket.direction == rocket.way.down)
+        {
+            ctx.fillRect(rocket.x, rocket.y - 2, 1, 4);
+        }
+        else //direction == rigth || left
+        {
+            ctx.fillRect(rocket.x , this.ship.height);//rocket.y + 10, 4, 1);
+        }
+        
     }
 
     //  Draw info.
@@ -657,7 +685,7 @@ PlayState.prototype.fireRocket = function() {
     if(this.lastRocketTime === null || ((new Date()).valueOf() - this.lastRocketTime) > (1000 / this.config.rocketMaxFireRate))
     {   
         //  Add a rocket.
-        this.rockets.push(new Rocket(this.ship.x, this.ship.y - 12, this.config.rocketVelocity));
+        this.rockets.push(new Rocket(this.ship.x, this.ship.y - 12, this.config.rocketVelocity,this.ship.direction));
         this.lastRocketTime = (new Date()).valueOf();
 
         //  Play the 'shoot' sound.
@@ -767,10 +795,18 @@ function Ship(x, y, direction)
     Fired by the ship, they've got a position, velocity and state.
 
     */
-function Rocket(x, y, velocity) {
+function Rocket(x, y, velocity,direction) {
     this.x = x;
     this.y = y;
     this.velocity = velocity;
+    this.direction = direction;
+    this.way = 
+    {
+        right : 1,
+        left  : 2,
+        up    : 3,
+        dowm  : 4
+    };
 }
 
 /*
