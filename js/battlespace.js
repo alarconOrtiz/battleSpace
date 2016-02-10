@@ -110,7 +110,7 @@ Game.prototype.start = function() {
 
     //  Set the game variables.
     this.lives = 3;
-    this.config.debugMode = /debug=false/.test(window.location.href);
+    this.config.debugMode = /debug=true/.test(window.location.href);
 
     //  Start the game loop.
     var game = this;
@@ -136,7 +136,7 @@ Game.prototype.mute = function(mute) {
         this.sounds.mute = this.sounds.mute ? false : true;
     }
 };
-
+ 
 //  The main loop.
 function GameLoop(game) {
     var currentState = game.currentState();
@@ -586,7 +586,11 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#999999';
     ctx.beginPath();
     ctx.moveTo(this.ship.x,this.ship.y);
+    var positionX = this.ship.x - this.ship.width/2;
+    var positionY = this.ship.x - this.ship.height/2;
+    ctx.drawImage(this.ship.imgLogo,positionX,positionY);
 
+/*
     switch(this.ship.direction)
     {
         case this.ship.shape.up:
@@ -609,7 +613,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
             ctx.lineTo(this.ship.x + this.ship.height,this.ship.y + (this.ship.width/2));
             ctx.lineTo(this.ship.x + this.ship.height,this.ship.y - (this.ship.width/2));
     
-    }
+    }*/
     ctx.fill();
     //example to create a ship as rect.
     //ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
@@ -657,7 +661,6 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillText(info, game.gameBounds.right, textYpos);
 
     //  If we're in debug mode, draw bounds.
-    console.log("debug mode :"+ this.config.debugMode);
     if(this.config.debugMode) {
         ctx.strokeStyle = '#ff0000';
         ctx.strokeRect(0,0,game.width, game.height);
@@ -787,11 +790,12 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
 */
 function Ship(x, y, direction)
  {
-    this.x      = x;
-    this.y      = y;
-    this.width  = 20;
-    this.height = 16;
-    this.direction = direction;
+    this.x          = x;
+    this.y          = y;
+    this.width      = 25;
+    this.height     = 44;
+    this.imgLogo    = document.getElementById("ship-img");
+    this.direction  = direction;
     this.shape = 
     {
         right : 1,

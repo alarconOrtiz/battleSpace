@@ -25,7 +25,7 @@ Starfield.prototype.initialise = function(div) {
 	self.height = window.innerHeight;
 
 	window.onresize = function(event) {
-		self.width = window.innerWidth;
+		self.width  = window.innerWidth;
 		self.height = window.innerHeight;
 		self.canvas.width = self.width;
 		self.canvas.height = self.height;
