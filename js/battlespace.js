@@ -361,13 +361,13 @@ PlayState.prototype.update = function(game, dt) {
     //  event for smooth movement, otherwise the ship would move
     //  more like a text editor caret.
     if(game.pressedKeys[37]) {
-        this.ship.angle    += 5;
+        this.ship.angle    -= 5;
         //this.ship.x -= this.shipSpeed * dt;
         this.ship.CalculateAngle();
         this.ship.direction = this.ship.shape.left;
     }
     if(game.pressedKeys[39]) {
-        this.ship.angle    -= 5;
+        this.ship.angle    += 5;
         //this.ship.x += this.shipSpeed * dt;
         this.ship.CalculateAngle();
         this.ship.direction = this.ship.shape.right;
@@ -378,16 +378,14 @@ PlayState.prototype.update = function(game, dt) {
     //if the top or bottom arrow keys are pressed, move the ship up or down  
     if(game.pressedKeys[38]) {
         //this.ship.y -= this.shipSpeed * dt;
-        this.ship.movement();
+        this.ship.movement(dt,this.shipSpeed);
         this.ship.direction = this.ship.shape.up;
     }
     if(game.pressedKeys[40]) {
-        this.ship.movement();
         //this.ship.y += this.shipSpeed * dt;
         this.ship.direction = this.ship.shape.down;
     }
 
-    console.log("angle ="+this.ship.angle);
     //  Keep the ship in canvas.
     if(this.ship.x < game.gameBounds.left) {
         this.ship.x = game.gameBounds.right;
@@ -838,10 +836,45 @@ Ship.prototype.CalculateAngle = function()
     if(angleConversion < 0)
         this.angle = 360-Math.abs(this.angle);
 }
-Ship.prototype.movement = function ()
+Ship.prototype.movement = function (dt,shipSpeed)
 {
-    
+    if(this.angle == 0 || this.angle == 360)
+    {
+        this.y -= shipSpeed * dt ;
+    }
+    else if(this.angle == 90)
+    {
+        this.x += shipSpeed * dt;
+    }
+    else if(this.angle == 180)
+    {
+        this.y += shipSpeed * dt;
+    }
+    else if(this.angle == 270)
+    {
+        this.x -= shipSpeed * dt;
+    }
+    else if(this.angle > 0 && this.angle < 90)
+    {
+        this.y -= shipSpeed * dt ;
+        this.x += shipSpeed * dt ;
+    }else if (this.angle > 90 && this.angle < 180)
+    {   
+        this.y += shipSpeed * dt ;
+        this.x += shipSpeed * dt ;
+    }else if(this.angle > 180 &&  this.angle< 270)
+    {
+        this.y += shipSpeed * dt ;
+        this.x -= shipSpeed * dt ;
+    }
+    else
+    {
+        this.y -= shipSpeed * dt ;
+        this.x -= shipSpeed * dt ;
+    }
+
 }
+
 Ship.prototype.drawRotatedImage = function(image, x, y,context) { 
     var TO_RADIANS = Math.PI/180;
     // save the current co-ordinate system 
