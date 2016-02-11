@@ -77,10 +77,10 @@ Game.prototype.initialise = function(gameCanvas) {
 
     //  Set the state game bounds.
     this.gameBounds = {
-        left: gameCanvas.width / 2 - this.config.gameWidth / 2,
-        right: gameCanvas.width / 2 + this.config.gameWidth / 2,
-        top: gameCanvas.height / 2 - this.config.gameHeight / 2,
-        bottom: gameCanvas.height / 2 + this.config.gameHeight / 2,
+        left    : gameCanvas.width / 2 - this.config.gameWidth / 2,
+        right   : gameCanvas.width / 2 + this.config.gameWidth / 2,
+        top     : gameCanvas.height / 2 - this.config.gameHeight / 2,
+        bottom  : gameCanvas.height / 2 + this.config.gameHeight / 2,
     };
 };
 
@@ -361,26 +361,33 @@ PlayState.prototype.update = function(game, dt) {
     //  event for smooth movement, otherwise the ship would move
     //  more like a text editor caret.
     if(game.pressedKeys[37]) {
-        this.ship.x -= this.shipSpeed * dt;
+        this.ship.angle    += 5;
+        //this.ship.x -= this.shipSpeed * dt;
+        this.ship.CalculateAngle();
         this.ship.direction = this.ship.shape.left;
     }
     if(game.pressedKeys[39]) {
-        this.ship.x += this.shipSpeed * dt;
+        this.ship.angle    -= 5;
+        //this.ship.x += this.shipSpeed * dt;
+        this.ship.CalculateAngle();
         this.ship.direction = this.ship.shape.right;
     }
     if(game.pressedKeys[32]) {
         this.fireRocket();
     }
-    //if the top or bottom arrow keys are pressed, move the ship up o down  
+    //if the top or bottom arrow keys are pressed, move the ship up or down  
     if(game.pressedKeys[38]) {
-        this.ship.y -= this.shipSpeed * dt;
+        //this.ship.y -= this.shipSpeed * dt;
+        this.ship.movement();
         this.ship.direction = this.ship.shape.up;
     }
     if(game.pressedKeys[40]) {
-        this.ship.y += this.shipSpeed * dt;
+        this.ship.movement();
+        //this.ship.y += this.shipSpeed * dt;
         this.ship.direction = this.ship.shape.down;
     }
 
+    console.log("angle ="+this.ship.angle);
     //  Keep the ship in canvas.
     if(this.ship.x < game.gameBounds.left) {
         this.ship.x = game.gameBounds.right;
@@ -587,34 +594,50 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.beginPath();
     ctx.moveTo(this.ship.x,this.ship.y);
     var positionX = this.ship.x - this.ship.width/2;
-    var positionY = this.ship.x - this.ship.height/2;
-    ctx.drawImage(this.ship.imgLogo,positionX,positionY);
-
-/*
-    switch(this.ship.direction)
+    var positionY = this.ship.y - this.ship.height/2;
+    //ctx.drawImage(this.ship.imgLogo,positionX,positionY);
+    
+    //this.ship.degreeVariation(90);
+    this.ship.drawRotatedImage(this.ship.imgLogo,positionX,positionY,ctx);
+    /*switch(this.ship.direction)
     {
         case this.ship.shape.up:
             //shape up
-            ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
-            ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y + this.ship.height);
+            this.ship.direction = this.ship.shape.NoDirec;
+            //that's old implementation.
+            //ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y + this.ship.height);
+            //ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y + this.ship.height);
             break;
         case this.ship.shape.down:
+            this.ship.direction = this.ship.shape.NoDirec;
             //shape down
-            ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y - this.ship.height);
-            ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
+            //ctx.lineTo(this.ship.x - (this.ship.width/2),this.ship.y - this.ship.height);
+            //ctx.lineTo(this.ship.x + (this.ship.width/2),this.ship.y - this.ship.height);
             break;
         case this.ship.shape.right:
+            this.ship.direction = this.ship.shape.NoDirec;
+            this.ship.angle    += 5;
             //shape right
-            ctx.lineTo(this.ship.x - this.ship.height,this.ship.y + (this.ship.width/2));
-            ctx.lineTo(this.ship.x - this.ship.height,this.ship.y - (this.ship.width/2));
+            //ctx.lineTo(this.ship.x - this.ship.height,this.ship.y + (this.ship.width/2));
+            //ctx.lineTo(this.ship.x - this.ship.height,this.ship.y - (this.ship.width/2));
             break;
-        default: //this.ship.shape.left 
+
+         case this.ship.shape.left:
+            this.ship.direction = this.ship.shape.NoDirec;
+            this.ship.angle    -= 5;
+            //shape right
+            //ctx.lineTo(this.ship.x - this.ship.height,this.ship.y + (this.ship.width/2));
+            //ctx.lineTo(this.ship.x - this.ship.height,this.ship.y - (this.ship.width/2));
+            break;    
+
+        default: 
+           this.ship.direction = 6;
              //shape left 
-            ctx.lineTo(this.ship.x + this.ship.height,this.ship.y + (this.ship.width/2));
-            ctx.lineTo(this.ship.x + this.ship.height,this.ship.y - (this.ship.width/2));
+            //ctx.lineTo(this.ship.x + this.ship.height,this.ship.y + (this.ship.width/2));
+            //ctx.lineTo(this.ship.x + this.ship.height,this.ship.y - (this.ship.width/2));
     
     }*/
-    ctx.fill();
+    //ctx.fill();
     //example to create a ship as rect.
     //ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
 
@@ -796,20 +819,52 @@ function Ship(x, y, direction)
     this.height     = 44;
     this.imgLogo    = document.getElementById("ship-img");
     this.direction  = direction;
+    this.angle      = 0; //bacause we always start in vertical position.
     this.shape = 
     {
         right : 1,
         left  : 2,
         up    : 3,
-        dowm  : 4
+        dowm  : 4,
+        NoDirec : 5
     };
 }
+Ship.prototype.CalculateAngle = function()
+{
+    var angleConversion = this.angle;
+    if(angleConversion > 0 && angleConversion > 360)
+      this.angle = this.angle - 360;
 
+    if(angleConversion < 0)
+        this.angle = 360-Math.abs(this.angle);
+}
+Ship.prototype.movement = function ()
+{
+    
+}
+Ship.prototype.drawRotatedImage = function(image, x, y,context) { 
+    var TO_RADIANS = Math.PI/180;
+    // save the current co-ordinate system 
+    // before we screw with it
+    context.save(); 
+ 
+    // move to the middle of where we want to draw our image
+    context.translate(x, y);
+ 
+    // rotate around that point, converting our 
+    // angle from degrees to radians 
+    context.rotate(this.angle * TO_RADIANS);
+ 
+    // draw it up and to the left by half the width
+    // and height of the image 
+    context.drawImage(image, -(image.width/2), -(image.height/2));
+ 
+    // and restore the co-ords to how they were when we began
+    context.restore(); 
+}
 /*
     Rocket
-
     Fired by the ship, they've got a position, velocity and state.
-
     */
 function Rocket(x, y, velocity,direction) {
     this.x = x;
@@ -818,10 +873,11 @@ function Rocket(x, y, velocity,direction) {
     this.direction = direction;
     this.way = 
     {
-        right : 1,
-        left  : 2,
-        up    : 3,
-        dowm  : 4
+        right   : 1,
+        left    : 2,
+        up      : 3,
+        dowm    : 4,
+        NoDirec : 5
     };
 }
 
